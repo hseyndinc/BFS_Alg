@@ -30,13 +30,28 @@ public class MazeSolverGUI extends Application {
         for (int row = 0; row < MAZE.length; row++) {
             for (int col = 0; col < MAZE[0].length; col++) {
                 Rectangle rect = new Rectangle(TILE_SIZE, TILE_SIZE);
-                if (MAZE[row][col] == 1) {
-                    rect.setFill(Color.GRAY);  // Wände in Grau
-                } else {
-                    rect.setFill(Color.WHITE);  // Wege in Weiß
-                }
+                setColor(rect, MAZE[row][col]);
+
+                // Hinzufügen eines Mausklick-Event-Handlers
+                final int r = row;
+                final int c = col;
+                rect.setOnMouseClicked(event -> {
+                    // Wechsel zwischen Wand und Weg
+                    MAZE[r][c] = (MAZE[r][c] == 1) ? 0 : 1;
+                    setColor(rect, MAZE[r][c]);
+                });
+
                 grid.add(rect, col, row);
             }
+        }
+    }
+
+    // Methode zum Setzen der Farbe basierend auf dem Zellenwert
+    private void setColor(Rectangle rect, int value) {
+        if (value == 1) {
+            rect.setFill(Color.GRAY); // Wand
+        } else {
+            rect.setFill(Color.WHITE); // Weg
         }
     }
 
