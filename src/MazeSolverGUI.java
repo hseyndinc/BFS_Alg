@@ -6,7 +6,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class MazeSolverGUI extends Application {
-    private static final int TILE_SIZE = 40;  // Größe jedes Rechtecks
+    private static final int TILE_SIZE = 40;
     private static final int[][] MAZE = {
             {1, 1, 1, 1, 1, 1, 1},
             {1, 0, 0, 1, 0, 0, 1},
@@ -14,6 +14,9 @@ public class MazeSolverGUI extends Application {
             {1, 0, 0, 0, 0, 0, 1},
             {1, 1, 1, 1, 1, 1, 1}
     };
+
+    private Point start = null;  // Startpunkt
+    private Point end = null;    // Zielpunkt
 
     @Override
     public void start(Stage primaryStage) {
@@ -32,13 +35,29 @@ public class MazeSolverGUI extends Application {
                 Rectangle rect = new Rectangle(TILE_SIZE, TILE_SIZE);
                 setColor(rect, MAZE[row][col]);
 
-                // Hinzufügen eines Mausklick-Event-Handlers
                 final int r = row;
                 final int c = col;
                 rect.setOnMouseClicked(event -> {
-                    // Wechsel zwischen Wand und Weg
-                    MAZE[r][c] = (MAZE[r][c] == 1) ? 0 : 1;
-                    setColor(rect, MAZE[r][c]);
+                    // Beim ersten Klick setzen wir den Startpunkt
+                    if (start == null) {
+                        start = new Point(r, c);
+                        rect.setFill(Color.GREEN);
+                    }
+                    // Beim zweiten Klick setzen wir den Zielpunkt
+                    else if (end == null) {
+                        end = new Point(r, c);
+                        rect.setFill(Color.RED);
+                    }
+                    // Falls Start und Ziel bereits gesetzt sind, wechseln wir zwischen Wand und Weg
+                    else {
+                        if (MAZE[r][c] == 1) {
+                            MAZE[r][c] = 0; // Wird zu einem begehbaren Weg
+                            rect.setFill(Color.WHITE);
+                        } else {
+                            MAZE[r][c] = 1; // Wird zu einer Wand
+                            rect.setFill(Color.GRAY);
+                        }
+                    }
                 });
 
                 grid.add(rect, col, row);
@@ -46,10 +65,9 @@ public class MazeSolverGUI extends Application {
         }
     }
 
-    // Methode zum Setzen der Farbe basierend auf dem Zellenwert
     private void setColor(Rectangle rect, int value) {
         if (value == 1) {
-            rect.setFill(Color.GRAY); // Wand
+            rect.setFill(Color.GRAY);  // Wand
         } else {
             rect.setFill(Color.WHITE); // Weg
         }
@@ -57,5 +75,15 @@ public class MazeSolverGUI extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    // Hilfsklasse zur Darstellung eines Punkts im Labyrinth
+    private static class Point {
+        int x, y;
+
+        Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
     }
 }
